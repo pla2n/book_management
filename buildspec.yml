@@ -25,4 +25,5 @@ artifacts:
   files:
     # 빌드 결과물(jar)의 경로도 수정해야 합니다.
     - backend/demo/build/libs/*.jar
+    - index.html
   discard-paths: yes
