@@ -3,27 +3,37 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      java: corretto17  # 프로젝트 Java 버전에 맞춰 11, 17, 21 중 선택
+      java: corretto17
+      nodejs: 18        # [추가] 프론트엔드 빌드를 위해 Node.js 설치
   build:
     commands:
-      - echo "Build Process Started..."
-      
-      # [중요] 백엔드 프로젝트가 있는 폴더로 이동합니다.
+      # ---------------------------------------------------------
+      # 1. 백엔드 빌드 (기존 내용)
+      # ---------------------------------------------------------
+      - echo "Backend Build Started..."
       - cd backend/demo
-      
-      # gradlew 실행 권한을 부여합니다.
       - chmod +x gradlew
-      
-      # 빌드를 시작합니다.
       - ./gradlew build
+      - cd ../..        # [중요] 다시 최상위 폴더로 돌아옵니다.
+
+      # ---------------------------------------------------------
+      # 2. 프론트엔드 빌드 (새로 추가!)
+      # ---------------------------------------------------------
+      - echo "Frontend Build Started..."
+      - cd frontend     # 프론트엔드 폴더로 이동
+      - npm install     # 필요한 재료(라이브러리) 다운로드
+      - npm run build   # 요리 시작! (결과물은 dist 폴더에 생김)
 
   post_build:
     commands:
-      - echo "Build Completed!"
+      - echo "All Builds Completed!"
 
 artifacts:
   files:
-    # 빌드 결과물(jar)의 경로도 수정해야 합니다.
+    # ---------------------------------------------------------
+    # S3로 보낼 파일들 (백엔드 jar + 프론트엔드 결과물)
+    # ---------------------------------------------------------
     - backend/demo/build/libs/*.jar
-    - index.html
-  discard-paths: yes
+    - frontend/dist/**/* # [핵심] 빌드된 프론트엔드 파일 전체
+  discard-paths: no       # 경로 구조를 유지할지 여부 (상황에 따라 조절 필요, 아래 설명 참고)
+  base-directory: frontend/dist # [꿀팁] S3에 올릴 때 'dist' 폴더 껍데기는 벗기고 알맹이만 올림
