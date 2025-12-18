@@ -1,0 +1,28 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto17  # 프로젝트 Java 버전에 맞춰 11, 17, 21 중 선택
+  build:
+    commands:
+      - echo "Build Process Started..."
+      
+      # [중요] 백엔드 프로젝트가 있는 폴더로 이동합니다.
+      - cd backend/demo
+      
+      # gradlew 실행 권한을 부여합니다.
+      - chmod +x gradlew
+      
+      # 빌드를 시작합니다.
+      - ./gradlew build
+
+  post_build:
+    commands:
+      - echo "Build Completed!"
+
+artifacts:
+  files:
+    # 빌드 결과물(jar)의 경로도 수정해야 합니다.
+    - backend/demo/build/libs/*.jar
+  discard-paths: yes
