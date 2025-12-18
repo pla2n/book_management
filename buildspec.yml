@@ -25,7 +25,11 @@ phases:
   post_build:
     commands:
       - echo "Moving Backend Artifact to Frontend Dist folder..."
-      # [핵심] 백엔드 jar 파일을 프론트엔드 결과물 폴더(dist)로 복사합니다.
+      
+      # [추가] 불필요한 'plain' jar 파일 삭제 (이게 방해꾼입니다!)
+      - rm -f backend/demo/build/libs/*-plain.jar
+      
+      # 이제 파일이 하나만 남았으므로 안전하게 복사됩니다.
       - cp backend/demo/build/libs/*.jar frontend/dist/application.jar
 
 artifacts:
